@@ -77,6 +77,9 @@ Blues1
 
 # -------------------------------------------------------------------------
 
+# Data and code are located here:
+# https://github.com/stever60/Bertrand_2022 
+
 #set working directory
 setwd("/Users/Steve/Dropbox/BAS/Data/R/Papers/Bertrand_2022")
 #check working directory
@@ -86,14 +89,21 @@ getwd()
 
 #  PART 0: Convert subsample XRF mass oxide to elemental data  STILL TO FINISH -------------------------------------------------------
 
+# Location of ARD, Yan and SSI subsample XRF data in Dropbox - add figure doi when done 
+# https://github.com/stever60/Bertrand_2022/tree/main/Data
+
 # Import subsample XRF data as oxide mass% and convert to elemental molecular weight
 # for use later on in correlations etc.
 
+
+
 # Oxide to elemental conversion factors
+# Datafile: https://github.com/stever60/Bertrand_2022/tree/main/Data
 ecf <- read_csv("Data/Oxide_elemental_conv_factors.csv")
 ecf
 
 # Ardley Lake - mass oxide to elemental conversion
+# Datafile: https://github.com/stever60/Bertrand_2022/tree/main/Data
 ARD_mass <- read_csv("Data/ARD_mass.csv")
 ARD_mass
 
@@ -115,6 +125,7 @@ ARD_elemental
 write.csv(ARD_elemental,"Output/ARD_elemental.csv", row.names = FALSE)
 
 # Yanou Lake - mass oxide to elemental conversion
+# Datafile: https://github.com/stever60/Bertrand_2022/tree/main/Data
 YAN_mass <- read_csv("Data/YAN_mass.csv")
 YAN_mass
 
@@ -335,8 +346,8 @@ ggsave("Figures/clr/Fig 1_clr_XRFelemental_byrecord.pdf",
 # ARD-ITRAX-SH20 - Import cps data ---------------------------------------------
 library(dplyr)
 
-# Location of ARD-ITRAX-SH20 composite dataset in dropbox - add figahre doi when done 
-# https://www.dropbox.com/s/a1hs9g0j6tsemlf/ARD_ITRAX_COMP_SH20.csv?dl=0 
+# Location of ARD-ITRAX-SH20 composite dataset
+# https://github.com/stever60/Bertrand_2022/tree/main/Data 
 
 # Composite ARD - ITRAX cps data & Sh20 BACON age-depth model (added in Excel)
 ARD_x.raw <- read_csv("Data/ARD_ITRAX_COMP_SH20.csv")
@@ -1129,8 +1140,8 @@ ggsave("Figures/ARD/Fig 15&17_clr_&_Ti_Z_CONISS_2017_age.pdf",
 # YAN-ITRAX-SH20 - Import cps data ---------------------------------------------
 library(dplyr)
 
-# Location of YAN-ITRAX-SH20 composite dataset in dropbox - add figahre doi when done 
-# https://www.dropbox.com/s/l80ycpnwqgfip8m/YAN_ITRAX_COMP_SH20.csv?dl=0
+# Location of YAN-ITRAX-SH20 composite dataset 
+# https://github.com/stever60/Bertrand_2022/tree/main/Data
 
 # Composite YAN - ITRAX cps data & Sh20 BACON age-depth model (added in Excel)
 YAN_x.raw <- read_csv("Data/YAN_ITRAX_COMP_SH20.csv")
@@ -1918,18 +1929,22 @@ ggsave("Figures/YAN/Fig 15&17_clr_&_Ti_Z_CONISS_2017_age.pdf",
 
 
 
-# PART 3 - Calibration -Using Pre-matched ARD & YAN ITRAX and XRF 1 cm datasets in Roberts et al. (2017)  ------------------------------------------------------------------
+# PART 3 - Calibration - Using Pre-matched ARD & YAN ITRAX and XRF 1 cm datasets in Roberts et al. (2017)  ------------------------------------------------------------------
 
-# Uses 1cm ITRAX smoothed dataset matched to XRF & ICPMS ratio data from original composite ARD & YAN excel files
-# To do: recreate macthed dataset from original cps and subsample data
+# Currently uses 1cm ITRAX smoothed dataset matched to XRF & ICPMS ratio data from original composite ARD & YAN excel files
+# Correlation and calibration/regression code below utlimately uses log-ratio Z-scores
+
+# Still to do: 
+# 1) match dataset from original cps and subsample data using itrax.r
+# 2) clr on cps (ITRAX) and XRF, ICPMS %, ppm subsample data
+# 3) elemental correlation, glm - 
+
 
 # Set up and Import data  ----------------------------------------------------------
 
-# Uses existing Excel combined ARD and YAN log, Ti normalised ITRAX and XRF datasets - 1 cm matched - grouped by guano/non guano
-# Link to ARD ITRAX-XRF 1cm matched datafile: https://www.dropbox.com/s/2v9sd78txfc2is5/ARD-M6_SH20_Mo_SUM.xlsx?dl=0
-# Link to YAN ITRAX-XRF 1cm matched datafile: https://www.dropbox.com/s/c574zddp35mlfa5/YAN-M5-SH20_Mo_SUM.xlsx?dl=0 
-# Link to data to import: https://www.dropbox.com/s/at97ex38mtum6bb/ARD_YAN.csv?dl=0: 
-# First, choose with interval dataset to import - i.1, 200um, 2mm or 1cm for each record
+# Data are located here:
+# https://github.com/stever60/Bertrand_2022/tree/main/Data
+
 # Dataframe db contains all oxide & elemental subsample and XRF-CS matched data for P, Ca, Cu, Zn, 
 # for ARD and YAN (terrestrial and marine)
 
@@ -1957,7 +1972,9 @@ all_variables <- c("P2O5_TiO2", "CaO_TiO2", "Cu_TiO2", "Zn_TiO2", "Sr_TiO2",
               "P_Ti", "Ca_Ti", "Cu_Ti", "Zn_Ti", "Sr_Ti",
               "P_Ti_CS","Ca_Ti_CS", "Cu_Ti_CS", "Zn_Ti_CS", "Sr_Ti_CS")
 
-# create log ratio, centered and centred, standardised (z-scores) log ratios for all data --------------------------
+# create log ratio, centered and centred, standardised (Z-scores) log ratios for all data --------------------------
+# to do - clr version of below from raw cps (ITRAX) and , ppm (XRF, ICPMS) elemenatal data
+# clr would need to be done before depth matching in itrax.R first
 
 db_ln <- db
 db_ln[, all_variables]<- log(db_ln[all_variables]) %>% 
@@ -1974,7 +1991,7 @@ db_cln.Z[, all_variables] <- scale(db_cln.Z[all_variables], center = TRUE, scale
   as_tibble()
 db_cln.Z
 
-# Note1: centred log ratio oxide and elemental data should be the same when centered
+# Note1: centred oxide and elemental data should be the same when centered
 # Note2: centered and standardised (scaled) produces the same output as centering alone for log ratio data
 
 #  Write data without blanks to Output folder --------------------------------------------------

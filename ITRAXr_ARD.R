@@ -13,6 +13,9 @@ library(tidypaleo) # Dewey Dunnington's ggplot extensions for palaeo-style plots
 library(readr)
 library(ggpubr)
 
+# Raw data are located here: 
+# https://www.dropbox.com/sh/r1w50fj88ucju3r/AABoVF97YqtymOPVIGLk8-AXa?dl=0 
+
 #set working directory
 setwd("/Users/Steve/Dropbox/BAS/Data/R/Papers/Bertrand_2021/Data/ITRAX/ARD_13_8_Mo")
 #check working directory
