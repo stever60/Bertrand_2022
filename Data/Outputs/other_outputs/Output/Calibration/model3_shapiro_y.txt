@@ -1,0 +1,6 @@
+
+	Shapiro-Wilk normality test
+
+data:  y3.reg
+W = 0.93791, p-value = 6.395e-09
+

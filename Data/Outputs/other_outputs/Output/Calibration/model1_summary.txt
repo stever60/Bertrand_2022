@@ -1,0 +1,19 @@
+
+Call:
+lm(formula = y1.reg ~ x1.reg, data = df.Z)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-1.7057 -0.2217 -0.0209  0.1800  1.6225 
+
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 4.867e-17  2.718e-02    0.00        1    
+x1.reg      9.009e-01  2.723e-02   33.09   <2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 0.4348 on 254 degrees of freedom
+Multiple R-squared:  0.8117,	Adjusted R-squared:  0.8109 
+F-statistic:  1095 on 1 and 254 DF,  p-value: < 2.2e-16
+

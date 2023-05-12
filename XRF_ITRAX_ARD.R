@@ -1,10 +1,7 @@
+# TO DO :-  
 
-# STILL TO DO :-  
-
-# 1 - add PCA code to ARD and YAN from Lago Pato analysis 
-# 2 - write code to add age-depth model columns from BACON output
-# 3 - recreate imported csv structure for matching ITRAX & XRF datasets done in excel into R / Tidyverse
-# 4 - reproduce Figure 3 plots from original dataset
+# 1 - add PCA code to ARD and YAN data
+# 2 - add age-depth model R script from BACON
 
 # Set up & clear ------------------------------------------------------------------
 
@@ -66,14 +63,14 @@ nb.cols <- 9
 Blues1 <- colorRampPalette(brewer.pal(9, "Blues"))(nb.cols)
 Blues1
 
-# PARTS -------------------------------------------------------------------
+# STRUCTURE -------------------------------------------------------------------
 
-# PART 0 - Mass% to Elemental conversion & clr for core and reference data
-# PART 1 - Ardley Lake - ARD-ITRAX-SH2
+# INTRODUCTION - Mass% to Elemental conversion & clr for core and reference data
+# PART 1 - Ardley Lake - ARD-ITRAX-SH20
 # PART 2 - Yanou Lake - YAN-ITRAX-SH20
 # PART 3 - Calibration - Matched ARD & YAN ITRAX and XRF 1 cm dataset
 # PART 4 - ITRAX & XRF comparison vs Age plots
-# PART 5 - Linear regression models 1-5 (Ca, P, Cu, Zn, Sr)
+# PART 5 - Linear regression models for Ca, P, Cu, Zn, Sr
 
 # -------------------------------------------------------------------------
 
@@ -85,9 +82,7 @@ setwd("/Users/Steve/Dropbox/BAS/Data/R/Papers/Bertrand_2022")
 #check working directory
 getwd() 
 
-# -------------------------------------------------------------------------
-
-#  PART 0: Convert subsample XRF mass oxide to elemental data  STILL TO FINISH -------------------------------------------------------
+#  INTRODUCTION: Convert subsample XRF mass oxide to elemental data  -------------------------------------------------------
 
 # Location of ARD, Yan and SSI subsample XRF data in Dropbox - add figure doi when done 
 # https://github.com/stever60/Bertrand_2022/tree/main/Data
@@ -95,12 +90,33 @@ getwd()
 # Import subsample XRF data as oxide mass% and convert to elemental molecular weight
 # for use later on in correlations etc.
 
-
-
 # Oxide to elemental conversion factors
 # Datafile: https://github.com/stever60/Bertrand_2022/tree/main/Data
 ecf <- read_csv("Data/Oxide_elemental_conv_factors.csv")
 ecf
+
+
+# Fildes and Ardley reference data - mass oxide to elemental conversion
+SSI_ref_mass <- read_csv("Data/SSI_ref.csv")
+
+SSI_ref_elemental <- SSI_ref_mass %>% 
+  rename(FeO = FeOT) %>% 
+  mutate(across(c("SiO2"), .fns = ~.*ecf$Si)) %>% rename(Si = SiO2) %>% 
+  mutate(across(c("Al2O3"), .fns = ~.*ecf$Al)) %>% rename(Al = Al2O3) %>%
+  mutate(across(c("K2O"), .fns = ~.*ecf$K)) %>% rename(K = K2O) %>%
+  mutate(across(c("CaO"), .fns = ~.*ecf$Ca)) %>% rename(Ca = CaO) %>%
+  mutate(across(c("TiO2"), .fns = ~.*ecf$Ti)) %>% rename(Ti = TiO2) %>%
+  mutate(across(c("MnO"), .fns = ~.*ecf$Mn)) %>% rename(Mn = MnO) %>%
+  mutate(across(c("FeO"), .fns = ~.*ecf$Fe)) %>% rename(Fe = FeO) %>%
+  mutate(across(c("Na2O"), .fns = ~.*ecf$Na)) %>% rename(Na = Na2O) %>%
+  mutate(across(c("MgO"), .fns = ~.*ecf$Mg)) %>% rename(Mg = MgO) %>% 
+  mutate(across(c("P2O5"), .fns = ~.*ecf$P)) %>% rename(P = P2O5) 
+#mutate(across(c("Cr2O3"), .fns = ~.*ecf$Cr)) %>% rename(Cr = Cr2O3) %>%
+#mutate(across(c("NiO"), .fns = ~.*ecf$Ni)) %>% rename(Ni = NiO) %>%
+#mutate(across(c("SO2"), .fns = ~.*ecf$S)) %>% rename(S = SO2)
+SSI_ref_elemental
+tail(SSI_ref_elemental)
+write.csv(SSI_ref_elemental,"Output/SSI_ref_elemental.csv", row.names = FALSE)
 
 # Ardley Lake - mass oxide to elemental conversion
 # Datafile: https://github.com/stever60/Bertrand_2022/tree/main/Data
@@ -146,34 +162,12 @@ YAN_elemental <- YAN_mass %>%
 YAN_elemental 
 write.csv(YAN_elemental,"Output/YAN_elemental.csv", row.names = FALSE)
 
-# Fildes and Ardley reference data - mass oxide to elemental conversion
-SSI_ref_mass <- read_csv("Data/SSI_ref.csv")
-
-SSI_ref_elemental <- SSI_ref_mass %>% 
-  rename(FeO = FeOT) %>% 
-  mutate(across(c("SiO2"), .fns = ~.*ecf$Si)) %>% rename(Si = SiO2) %>% 
-  mutate(across(c("Al2O3"), .fns = ~.*ecf$Al)) %>% rename(Al = Al2O3) %>%
-  mutate(across(c("K2O"), .fns = ~.*ecf$K)) %>% rename(K = K2O) %>%
-  mutate(across(c("CaO"), .fns = ~.*ecf$Ca)) %>% rename(Ca = CaO) %>%
-  mutate(across(c("TiO2"), .fns = ~.*ecf$Ti)) %>% rename(Ti = TiO2) %>%
-  mutate(across(c("MnO"), .fns = ~.*ecf$Mn)) %>% rename(Mn = MnO) %>%
-  mutate(across(c("FeO"), .fns = ~.*ecf$Fe)) %>% rename(Fe = FeO) %>%
-  mutate(across(c("Na2O"), .fns = ~.*ecf$Na)) %>% rename(Na = Na2O) %>%
-  mutate(across(c("MgO"), .fns = ~.*ecf$Mg)) %>% rename(Mg = MgO) %>% 
-  mutate(across(c("P2O5"), .fns = ~.*ecf$P)) %>% rename(P = P2O5) 
-  #mutate(across(c("Cr2O3"), .fns = ~.*ecf$Cr)) %>% rename(Cr = Cr2O3) %>%
-  #mutate(across(c("NiO"), .fns = ~.*ecf$Ni)) %>% rename(Ni = NiO) %>%
-  #mutate(across(c("SO2"), .fns = ~.*ecf$S)) %>% rename(S = SO2)
-SSI_ref_elemental
-tail(SSI_ref_elemental)
-write.csv(SSI_ref_elemental,"Output/SSI_ref_elemental.csv", row.names = FALSE)
-
 # Centered log ratio (clr) conversion for all three datasets --------------------------------------------
 library(compositions)
 
 # SSI ref elemental data ------------------------------------------
 
-# remove columns with any NAs - will remove Si, Ti, LOI, TC, TN
+# remove columns with NAs in them - here, will remove Si, Ti
 SSI_ref_clr <- SSI_ref_elemental %>% 
   select_if(~!any(is.na(.))) %>% 
   select(Al:P) %>% 
@@ -181,20 +175,6 @@ SSI_ref_clr <- SSI_ref_elemental %>%
 SSI_ref_clr <- as_tibble(SSI_ref_clr)
 SSI_ref_clr
 write.csv(SSI_ref_clr,"Output/SSI_ref_clr.csv", row.names = FALSE)
-
-# How to remove columns with only NAs - will remove TC and TN 
-#SSI_ref_elemental1 <- SSI_ref_elemental[, colSums(is.na(SSI_ref_elemental)) != nrow(SSI_ref_elemental)]
-#tail(SSI_ref_elemental1)
-
-# How to set threshold for removing columns with NAs in them based on number or percentage of columns containing NA columns
-# e.g., remove whole columns where eg >50% or 10% of data in columns are NA – 0.1 will remove all NA columns 
-#SSI_ref_elemental1 <- SSI_ref_elemental[, colSums(is.na(SSI_ref_elemental)) < nrow(SSI_ref_elemental) * 0.1]
-#tail(SSI_ref_elemental1)
-
-# How to remove all rows with NAs -  this leaves nothing as all rows have NAs in them
-#SSI_ref_elemental1 <- SSI_ref_elemental %>% 
-#  filter(!if_any(everything(), is.na))
-#SSI_ref_elemental1
 
 # Merge clr dataframe with Sample_code and location dataframe columns
 SSI_ref_elemental1 <- SSI_ref_elemental %>% 
@@ -278,7 +258,6 @@ head(ARD_YAN_SSI_clr)
 tail(ARD_YAN_SSI_clr)
 write.csv(ARD_YAN_SSI_clr,"Output/ARD_YAN_SSI_elemental_clr.csv", row.names = FALSE)
 
-
 # Bi-plots and correlation ----------------------------------------------------------------
 library(ggpubr)
 
@@ -340,8 +319,8 @@ ggsave("Figures/clr/Fig 1_clr_XRFelemental_byrecord.pdf",
        height = c(30), width = c(30), dpi = 600, units = "cm")
 
 # -------------------------------------------------------------------------
-
-# PART 1 - Ardley Lake - ARD-ITRAX-SH20  ------------------------------------------------------------------
+# PART 1 - Ardley Lake - ARD-ITRAX-SH20 
+# -------------------------------------------------------------------------
 
 # ARD-ITRAX-SH20 - Import cps data ---------------------------------------------
 library(dplyr)
@@ -369,7 +348,7 @@ ARD_COMP <- filter(ARD_x.raw, validity == "1") %>%
   filter(MSE < ARD_MSE.thres) %>%
   filter(kcps > ARD_kcps.thres)
 
-# Remove unwanted columns - might need to change these - and write to file
+# Remove unwanted columns - and write to file
 ARD_COMP_filter <- select(ARD_COMP, 
                           -c(filename, position_mm, 
                              core_depth_cm, min, max,
@@ -459,9 +438,9 @@ ARD_summary <- ARD_COMP_filter1 %>%
   print()
 
 #  Write filter cps dataset and stats to file --------------------------------------------------
-write.csv(ARD_COMP_filter1,"Output/ARD/2_cps_filter1.csv", row.names = FALSE)
-write.csv(ARD_summary,"Output/ARD/2.1_cps_filter1_stats.csv", row.names = FALSE)
-write.csv(ARD_COMP_filter1.Z,"Output/ARD/3_cps_filter1_Z.csv", row.names = FALSE)
+write.csv(ARD_COMP_filter1,"Output/ARD/ARD_COMP_filter1.csv", row.names = FALSE)
+write.csv(ARD_summary,"Output/ARD/ARD_summary_stats.csv", row.names = FALSE)
+write.csv(ARD_COMP_filter1.Z,"Output/ARD/ARD_COMP_filter1.Z.csv", row.names = FALSE)
 
 # Filter cps element column list based on mean and max cps values -------------------
 
@@ -485,17 +464,287 @@ ARD_mx50 <- select(ARD_COMP_filter1,
                    Core, depth_cm, SH20_age, kcps, MSE, 
                    Mg:Mo_coh & where(ARD_max50), TS_sum:cps_sum) %>% print()
 
-# Create lists of column names to take forward
+# Create lists of column names / elements to take forward
 ARD_col_m50 <- select(ARD_COMP_filter1, Mg:Mo_coh 
                       & -REE & -machine_elements 
                       & where(ARD_mean50)) %>% names() %>% print()
-ARD_col_m200 <- select(ARD_COMP_filter1, Mg:Mo_coh 
+ARD_col_m200 <- select(ç, Mg:Mo_coh 
                        & -REE & -machine_elements 
                        & where(ARD_mean200)) %>% names() %>% print()
 ARD_col_m50_mx50 <- select(ARD_COMP_filter1, Mg:Mo_coh 
                         & -REE & -machine_elements 
                         & where(ARD_max50) 
                         & where(ARD_mean50)) %>% names() %>% print()
+
+# -------------------------------------------------------------------------
+# Element filtering - RUN ONCE - then use as ARD_COMP_filter1 to take forward
+# -------------------------------------------------------------------------
+# Autocorrelation based filtering of elements -----------------------------
+
+# Use autocorrelation function (acf) and plots to explore noise in a time-series
+library(forecast)
+library(ggrepel)
+library(directlabels)
+
+# Adjust for any element of interest by changing $
+# split into two groups below to visualise the most common elements measured by ITRAX
+theme_set(theme_bw(8))
+Fig3.3 <- ggarrange(
+  ggAcf(ARD_COMP_filter1$Al) + ylim(c(NA,1)), ggAcf(ARD_COMP_filter1$Si) + ylim(c(NA,1)), 
+  ggAcf(ARD_COMP_filter1$P) + ylim(c(NA,1)), ggAcf(ARD_COMP_filter1$S) + ylim(c(NA,1)),
+  ggAcf(ARD_COMP_filter1$Cl) + ylim(c(NA,1)), ggAcf(ARD_COMP_filter1$K) + ylim(c(NA,1)), 
+  ggAcf(ARD_COMP_filter1$Ca) + ylim(c(NA,1)), ggAcf(ARD_COMP_filter1$Ti) + ylim(c(NA,1)),
+  ggAcf(ARD_COMP_filter1$V) + ylim(c(NA,1)), ggAcf(ARD_COMP_filter1$Cr) + ylim(c(NA,1)),
+  ggAcf(ARD_COMP_filter1$Mn) + ylim(c(NA,1)), ggAcf(ARD_COMP_filter1$Fe) + ylim(c(NA,1)),
+  nrow = 4, ncol = 3)
+print(Fig3.3)
+ggsave("Output/ITRAX_COMPOSITE/Valid_qc/Section3/Figures/Fig3.3_ACF_pt1.pdf", 
+       height = c(30), width = c(30), dpi = 600, units = "cm")
+
+Fig3.4 <- ggarrange(
+  ggAcf(ARD_COMP_filter1$Co) + ylim(c(NA,1)), ggAcf(ARD_COMP_filter1$Ni) + ylim(c(NA,1)),
+  ggAcf(ARD_COMP_filter1$Cu) + ylim(c(NA,1)), ggAcf(ARD_COMP_filter1$Zn) + ylim(c(NA,1)),
+  ggAcf(ARD_COMP_filter1$Se) + ylim(c(NA,1)), ggAcf(ARD_COMP_filter1$Br) + ylim(c(NA,1)),
+  ggAcf(ARD_COMP_filter1$Rb) + ylim(c(NA,1)), ggAcf(ARD_COMP_filter1$Sr) + ylim(c(NA,1)),
+  ggAcf(ARD_COMP_filter1$Zr) + ylim(c(NA,1)), ggAcf(ARD_COMP_filter1$Ba) + ylim(c(NA,1)),
+  ggAcf(ARD_COMP_filter1$Mo_inc) + ylim(c(NA,1)), ggAcf(ARD_COMP_filter1$Mo_coh) + ylim(c(NA,1)),
+  nrow = 4, ncol = 3)
+print(Fig3.4)
+ggsave("Output/ITRAX_COMPOSITE/Valid_qc/Section3/Figures/Fig3.4_ACF_pt2.pdf", 
+       height = c(30), width = c(30), dpi = 600, units = "cm")
+
+# Filter elements based on acf lag thresholds
+
+# set lag threshold to 20 for whole dataset
+# for 1 mm dataset, 20 checks autocorrelation +/-20 mm around each measurement 
+# can be performed on different units later
+# 0.2 or 0.1 is  minimum threshold
+# 0.5 is  maximum threshold - i.e, lag time to half correlation coefficient 
+
+# define filter and lag thresholds
+acf_thres_min <- 0.1
+acf_thres_max <- 0.5
+lag_thres <- 20
+
+# MINIMUM ACF threshold element filtering ACF > 0.1 - ALL SITES DATA ----------------------------------------
+
+Fig3.5a <- apply(ARD_COMP_filter1 %>% select(any_of(ARD_elements), -c(Mg, Ar, REE)), 
+                 2, FUN = function(x){round(Acf(x, plot = F)$acf, 3)}) %>%
+  as_tibble(rownames = "lag") %>%
+  pivot_longer(!c("lag"), names_to = "elements", values_to = "value") %>%
+  mutate(lag = as.numeric(lag),
+         elements = factor(elements, levels = filter(., lag == lag_thres) %>% 
+                             arrange(desc(value)) %>% pull(elements))) %>%
+  group_by(elements) %>%
+  ggplot(aes(x = lag, y = value, col = elements)) +
+  geom_line() +
+  geom_hline(yintercept= c(acf_thres_min, acf_thres_max), color="red", size=0.5, linetype = 3) +
+  xlim(0, 50) +
+  theme(legend.position="NULL") +
+  geom_dl(aes(label = elements), method = list(dl.trans(x = x + 0.5), "last.points", cex = 0.5)) # adds element labels to end
+print(Fig3.5a)
+ggsave("Output/ITRAX_COMPOSITE/Valid_qc/Section3/Figures/Fig3.5a_ACF_all_elements.pdf", 
+       height = c(10), width = c(10), dpi = 600, units = "cm")
+
+# apply acf based filtering to ARD_COMP_filter1 elmement list - leaving acf elements >0.1 min threshold
+apply(ARD_COMP_filter1 %>% select(any_of(ARD_elements), -c(Mg, Ar, REE)), 2, FUN = function(x){round(Acf(x, plot = F)$acf, 3)}) %>%
+  as_tibble(rownames = "lag") %>% 
+  pivot_longer(!c("lag"), names_to = "elements", values_to = "value") %>% 
+  mutate(lag = as.numeric(lag),
+         elements = factor(elements, levels = filter(., lag == lag_thres) %>% 
+                             arrange(desc(value)) %>% 
+                             pull(elements))) %>%
+  group_by(elements) %>%
+  filter(lag == lag_thres) %>%
+  filter(value >= acf_thres_min) %>% 
+  pull(elements) %>% 
+  ordered() -> acfElements_min 
+acfElements_min
+
+acfElementsList_min <- select(ARD_COMP_filter1, any_of(acfElements_min)) %>% 
+  names()
+acfElementsList_min
+
+# Replot with min acf filtered elements only
+Fig3.5b <- apply(ARD_COMP_filter1 %>% select(any_of(acfElements_min)), 
+                 2, FUN = function(x){round(Acf(x, plot = F)$acf, 3)}) %>%
+  as_tibble(rownames = "lag") %>%
+  pivot_longer(!c("lag"), names_to = "elements", values_to = "value") %>%
+  mutate(lag = as.numeric(lag),
+         elements = factor(elements, levels = filter(., lag == lag_thres) %>% 
+                             arrange(desc(value)) %>% pull(elements))) %>%
+  group_by(elements) %>%
+  ggplot(aes(x = lag, y = value, col = elements)) +
+  geom_line() +
+  geom_hline(yintercept= c(acf_thres_min, acf_thres_max), color="red", size=0.5, linetype = 3) +
+  xlim(0, 50) +
+  theme(legend.position="NULL") +
+  geom_dl(aes(label = elements), method = list(dl.trans(x = x + 0.5), "last.points", cex = 0.5)) # adds element labels to end
+print(Fig3.5b)
+ggsave("Output/ITRAX_COMPOSITE/Valid_qc/Section3/Figures/Fig3.5b_ACF_elements.pdf", 
+       height = c(10), width = c(10), dpi = 600, units = "cm")
+
+acfElements_min1 <- select(ARD_COMP_filter1, c(MSE, any_of(acfElements_min))) %>% 
+  names()
+acfElements_min1
+
+# Summary ACF element plot vs depth
+Fig3.6 <- ARD_COMP_filter1 %>% 
+  #filter(qc == TRUE) %>% 
+  select(any_of(acfElements_min1), depth_cm, Core) %>%
+  pivot_longer(any_of(acfElements_min1), names_to = "param", values_to = "element") %>%
+  filter(param %in% acfElements_min1) %>%
+  mutate(param = fct_relevel(param, acfElementsList_min1)) %>%
+  ggplot(aes(x = element, y = depth_cm)) +
+  geom_lineh(aes(color = Core)) +
+  #geom_point(size = 0.01) + #don't use for ITRAX - too many datapoints 
+  #geom_lineh(size = 0.5) + #this will make a single black line plot
+  theme(legend.position="bottom") +
+  guides(colour = guide_legend(nrow = 1)) +
+  scale_y_reverse() +
+  scale_x_continuous(n.breaks = 4) +
+  facet_geochem_gridh(vars(param)) +
+  labs(x = "Peak area [cps]", y = "Depth [cm]") +
+  ggtitle("ARD Composite - all sites: cps, elements ACF >0.1")
+print(Fig3.6)
+ggsave("Output/ITRAX_COMPOSITE/Valid_qc/Section3/Figures/Fig3.6_All_Sites_ACFmin.pdf", 
+       height = c(15), width = c(30), dpi = 600, units = "cm")
+
+# nested ggarrange to produce split level summary plot with different number of plots per row
+ggarrange(Fig3.6, # First row
+          ggarrange(Fig3.5a, Fig3.5b, ncol = 2, labels = c("B", "C")), # Second row with two plots
+          nrow = 2, 
+          labels = "A", common.legend = TRUE)
+ggsave("Output/ITRAX_COMPOSITE/Valid_qc/Section3/Figures/Fig3.7_All_Sites_ACF_min.pdf", 
+       height = c(30), width = c(30), dpi = 600, units = "cm")
+
+# MAXIMUM ACF threshold element filtering - all sites ----------------------------------------
+
+# ACF > 0.5 - ALL SITES DATA
+# apply acf based filtering to ARD_COMP_filter1 element list - leaving acf elements >0.1 min threshold
+apply(ARD_COMP_filter1 %>% select(any_of(ARD_elements), -c(Mg, Ar, REE)), 2, FUN = function(x){round(Acf(x, plot = F)$acf, 3)}) %>%
+  as_tibble(rownames = "lag") %>% 
+  pivot_longer(!c("lag"), names_to = "elements", values_to = "value") %>% 
+  mutate(lag = as.numeric(lag),
+         elements = factor(elements, levels = filter(., lag == lag_thres) %>% 
+                             arrange(desc(value)) %>% 
+                             pull(elements))) %>%
+  group_by(elements) %>%
+  filter(lag == lag_thres) %>%
+  filter(value >= acf_thres_max) %>% 
+  pull(elements) %>% 
+  ordered() -> acfElements_max 
+acfElements_max
+
+acfElementsList_max <- select(ARD_COMP_filter1, any_of(acfElements_max)) %>% 
+  names()
+acfElementsList_max
+
+# Replot with max acf filtered elements only
+Fig3.8 <- apply(ARD_COMP_filter1 %>% select(any_of(acfElements_max)), 
+                2, FUN = function(x){round(Acf(x, plot = F)$acf, 3)}) %>%
+  as_tibble(rownames = "lag") %>%
+  pivot_longer(!c("lag"), names_to = "elements", values_to = "value") %>%
+  mutate(lag = as.numeric(lag),
+         elements = factor(elements, levels = filter(., lag == lag_thres) %>% 
+                             arrange(desc(value)) %>% pull(elements))) %>%
+  group_by(elements) %>%
+  ggplot(aes(x = lag, y = value, col = elements)) +
+  geom_line() +
+  geom_hline(yintercept= c(acf_thres_min, acf_thres_max), color="red", size=0.5, linetype = 3) +
+  xlim(0, 50) +
+  ylim(0.3, 1) +
+  theme(legend.position="NULL") +
+  geom_dl(aes(label = elements), method = list(dl.trans(x = x + 0.5), "last.points", cex = 0.5)) # adds element labels to end
+print(Fig3.8)
+ggsave("Output/ITRAX_COMPOSITE/Valid_qc/Section3/Figures/Fig3.8_ACFmax_elements.pdf", 
+       height = c(30), width = c(30), dpi = 600, units = "cm")
+
+# Summary acf element plot vs depth
+library(tidypaleo)
+theme_set(theme_bw(base_size=8))
+Fig3.9 <- ARD_COMP_filter1 %>% 
+  #filter(qc == TRUE) %>% 
+  select(any_of(acfElements_max), MSE, depth_cm, Core) %>%
+  pivot_longer(any_of(acfElements_max), names_to = "param", values_to = "element") %>%
+  filter(param %in% acfElements_max) %>%
+  mutate(param = fct_relevel(param, acfElementsList_max)) %>%
+  ggplot(aes(x = element, y = depth_cm)) +
+  geom_lineh(aes(color = Core)) +
+  #geom_point(size = 0.01) + #don't use for ITRAX - too many datapoints 
+  #geom_lineh(size = 0.5) + #this will make a single black line plot
+  theme(legend.position="bottom") +
+  guides(colour = guide_legend(nrow = 1)) +
+  scale_y_reverse() +
+  scale_x_continuous(n.breaks = 4) +
+  facet_geochem_gridh(vars(param)) +
+  labs(x = "Peak area [cps]", y = "Depth [cm]") +
+  ggtitle("ARD Composite ITRAX dataset: cps (ACF-filtered elements) max ACF >0.5")
+print(Fig3.9)
+ggsave("Output/ITRAX_COMPOSITE/Valid_qc/Section3/Figures/Fig3.9_ACFmax_key_elements.pdf", 
+       height = c(30), width = c(30), dpi = 600, units = "cm")
+
+# nested ggarrange to produce split level summary plot with different number of plots per row
+ggarrange(Fig3.9, # First row
+          ggarrange(Fig3.5a, Fig3.8, ncol = 2, labels = c("B", "C")), # Second row with two plots
+          nrow = 2, 
+          labels = "A", common.legend = TRUE)
+ggsave("Output/ITRAX_COMPOSITE/Valid_qc/Section3/Figures/Fig3.10_All_Sites_ACF_max.pdf", 
+       height = c(30), width = c(30), dpi = 600, units = "cm")
+
+# ARD - plotted with smoothing -------------------------------------------
+# Can run with %cps sum etc. -  to make sure all is OK for each record before continuing 
+library(tidypaleo)
+theme_set(theme_bw(base_size=8))
+
+# ARD
+ARD_COMP_filter2 <- ARD_COMP_filter1 %>% # can change this to use pc_cps file, inc, or coh/inc normlaised file in here  
+  #filter(Record == "ARD") %>% 
+  select(all_of(acfElements_min), MSE, depth_cm, Core)
+
+# plotting the running mean stratigraphically - and add onto XRF plot for each record
+# with ACF elements only
+Fig3.15 <- full_join(y = ARD_COMP_filter2 %>%
+                       as_tibble() %>%
+                       # uses a 10 point running mean (10 mm for this data); 5 before, 5 after
+                       mutate(across(any_of(c(acfElementsList_min)), 
+                                     function(x){unlist(slider::slide(x, mean, .before = 5, .after = 5))}
+                       )
+                       ) %>%
+                       mutate(type = "mean"), 
+                     x = ARD_COMP_filter2 %>% 
+                       as_tibble() %>% 
+                       mutate(type = "raw")
+) %>% 
+  #filter(validity == TRUE) %>%
+  select(all_of(acfElementsList_min), MSE, depth_cm, Core, type) %>%
+  tidyr::pivot_longer(!c("depth_cm", "Core", "type"), names_to = "elements", values_to = "peakarea") %>% 
+  tidyr::drop_na() %>%
+  mutate(elements = factor(elements, levels = c("MSE", all_of(acfElementsList_min)))) %>%
+  mutate(label = as_factor(Core),
+         type = as_factor(type)
+  ) %>%
+  glimpse() %>%
+  ggplot(aes(x = peakarea, y = depth_cm)) +
+  tidypaleo::geom_lineh(aes(group = type, colour = label, alpha = type)) +
+  scale_alpha_manual(values = c(0.1, 1)) +
+  theme(legend.position="bottom") +
+  guides(colour = guide_legend(nrow = 1)) +
+  scale_y_reverse() +
+  scale_x_continuous(n.breaks = 4) +
+  facet_geochem_gridh(vars(elements)) +
+  labs(x = "Peak area [cps]", y = "Depth [cm]")+
+  ggtitle("ARD: cps, acf elements")
+print(Fig3.15)
+
+# nested ggarrange to produce split level summary plot with different number of plots per row
+ggarrange(Fig3.6, Fig3.15, nrow = 2, labels = c("A", "B"), common.legend = TRUE)
+ggsave("Output/ITRAX_COMPOSITE/Valid_qc/Section3/Figures/Fig3.21_A-B.pdf", 
+       height = c(30), width = c(30), dpi = 600, units = "cm")
+
+# Define elements based on ACF analysis -----------------------------------
+
+ARD_col_m50 <- acfElementsList_min
 
 # Correlation matrices -------------------------------------------------------
 
@@ -504,21 +753,16 @@ library(dplyr)
 # Correlation plot with max200 elements - use this to see where positive/significant correlations as an overview
 theme_set(theme_bw(base_size=2))
 
-ggcorr(ARD_COMP_filter1[, ARD_col1], method = c("everything", "pearson"), 
-       size = 2, label = FALSE, label_alpha = TRUE, label_round=2) 
-ggsave("Figures/ARD/Fig 0_Corr_matrix_cps_all.pdf", 
-       height = c(30), width = c(30), dpi = 600, units = "cm")
-
 # Manual list of elements with significant correlations - determined visually from correlation matrix
 plot_elements1_ARD <-c("Si", "P", "S", "K", "Ca", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Cu", "Zn",
                        "Br", "Rb", "Sr", "Zr", "Mo", "Ba", "Pb", "Bi","Mo_inc", "Mo_coh", "inc_coh", "coh_inc")
 
 # Stats generated list of elements to take forward based on m50
-plot_elements2_ARD <- c("Si", "P", ARD_col_m50, "inc_coh", "coh_inc")
+plot_elements2_ARD <- c(ARD_col_m50, "inc_coh", "coh_inc")
 
 ggcorr(ARD_COMP_filter1[,  plot_elements2_ARD], method = c("everything", "pearson"), 
        size = 4, label = TRUE, label_alpha = TRUE, label_round=2) 
-ggsave("Figures/ARD/Fig 0_Corr_matrix_cps_m50.pdf", 
+ggsave("Figures/ARD/Fig 0_Corr_matrix_cps_ACF.pdf", 
        height = c(30), width = c(30), dpi = 600, units = "cm")
 
 # Correlation density matrix plot
@@ -526,7 +770,7 @@ theme_set(theme_bw(base_size=8))
 ggpairs(ARD_COMP_filter1, columns = plot_elements2_ARD, upper = list(continuous = wrap("cor", size = 2)),
         lower = list(continuous = wrap("points", alpha = 0.5, size=0.2)),
         title="Correlation-density plot")
-ggsave("Figures/ARD/Fig 0__Corr-den_matrix_cps.pdf", 
+ggsave("Figures/ARD/Fig 0_Corr-den_matrix_cps_ACF.pdf", 
        height = c(30), width = c(30), dpi = 600, units = "cm")
 
 
@@ -550,7 +794,7 @@ ARD_Fig1
 ggsave("Figures/ARD/Fig 1_cps_elements1.pdf",
        height = c(15), width = c(30), dpi = 600, units = "cm")
 
-# Figure 2 - cps elements2 based on mean>50 cps stats
+# Figure 2 - cps elements2 based on ACF or mean>50 cps stats
 theme_set(theme_bw(8))
 ARD_Fig2 <- ARD_COMP_filter1_long  %>%
   filter(param %in% plot_elements2_ARD) %>%
@@ -561,9 +805,9 @@ ARD_Fig2 <- ARD_COMP_filter1_long  %>%
   scale_y_reverse() +
   facet_geochem_gridh(vars(param)) +
   labs(x = "cps", y = "Depth (cm)") +
-  ggtitle("Filtered elements cps based on mean>50 cps stats")
+  ggtitle("Filtered elements cps based on ACF stats")
 ARD_Fig2
-ggsave("Figures/ARD/Fig 2_cps_elements2.pdf",
+ggsave("Figures/ARD/Fig 2_cps_elements2_ACF.pdf",
        height = c(15), width = c(30), dpi = 600, units = "cm")
 
 # Figure 3 - cps elements2 Z-scores
@@ -577,9 +821,9 @@ ARD_Fig3 <- ARD_COMP_filter1_long.Z  %>%
   scale_y_reverse() +
   facet_geochem_gridh(vars(param)) +
   labs(x = "cps", y = "Depth (cm)") +
-  ggtitle("Filtered elements cps Z-scores based on mean>50 cps stats")
+  ggtitle("Filtered elements cps Z-scores based on ACF cps stats")
 ARD_Fig3
-ggsave("Figures/ARD/Fig 3_cps_elements2_Z.pdf",
+ggsave("Figures/ARD/Fig 3_cps_elements2_ACF_Z.pdf",
        height = c(15), width = c(30), dpi = 600, units = "cm")
 
 
@@ -634,9 +878,9 @@ ARD_Fig3A <- ARD_COMP_filter1_clr_long  %>%
   scale_y_reverse() +
   facet_geochem_gridh(vars(param)) +
   labs(x = "cps", y = "Depth (cm)") +
-  ggtitle("Filtered elements cps clr based on mean>50 cps stats")
+  ggtitle("Filtered elements cps clr based on ACF cps stats")
 ARD_Fig3A
-ggsave("Figures/ARD/Fig 3A_cps_clr_elements.pdf",
+ggsave("Figures/ARD/Fig 3A_cps_clr_elements_ACF.pdf",
        height = c(15), width = c(30), dpi = 600, units = "cm")
 
 
@@ -679,7 +923,7 @@ ARD_Ln_Ti_norm.Z
 # write ARD_Ln_Ti_norm.Z to file for Part 3 & 4
 write.csv(ARD_Ln_Ti_norm.Z,"Output/ARD/ARD_Ln_Ti_norm.Z.csv", row.names = FALSE)
 
-# Elements and scatter as %cps sum - Bertrand et al 2021 -------- produces the same result as %TSN sum
+# Elements and scatter as %cps sum -------- produces the same result as %TSN sum
 
 ARD_cps_sum_norm_pc <- ARD_cps_sum_norm %>% 
   mutate(across(c("Mg":"Mo_coh"),.fns = ~.*100)) %>% 
@@ -830,8 +1074,8 @@ plot_elements3_ARD <- c(ARD_TSN_m0.1_list, "inc_coh", "coh_inc")
 # Roberts et al 2017 - CONISS with broken stick Hellingers dist defined zones - red dashed lines
 theme_set(theme_bw(8))
 ARD_Fig4a <- ARD_inc_norm_long  %>%
-  filter(param %in% plot_elements3_ARD) %>%
-  mutate(param = fct_relevel(param, plot_elements3_ARD)) %>%
+  filter(param %in% plot_elements2_ARD) %>%
+  mutate(param = fct_relevel(param, plot_elements2_ARD)) %>%
   ggplot(aes(x = value, y = depth_cm)) +
   geom_point(size = 0.01) +
   geom_lineh(size = 0.5) +
@@ -842,8 +1086,8 @@ ARD_Fig4a <- ARD_inc_norm_long  %>%
   ggtitle("Incoherent (inc.) scatter normalised (filtered elements): CONISS XRF")
 
 ARD_Fig4b <- ARD_coh_inc_norm_long  %>%
-  filter(param %in% plot_elements3_ARD) %>%
-  mutate(param = fct_relevel(param, plot_elements3_ARD)) %>%
+  filter(param %in% plot_elements2_ARD) %>%
+  mutate(param = fct_relevel(param, plot_elements2_ARD)) %>%
   ggplot(aes(x = value, y = depth_cm)) +
   geom_point(size = 0.01) +
   geom_lineh(size = 0.5) +
@@ -871,8 +1115,8 @@ plot_elements4_ARD <- c("K", "Ca", "Ti", "Mn", "Fe", "Cu", "Zn",
 # Roberts et al 2017 - CONISS with broken stick Hellingers dist defined zones - red dashed lines
 theme_set(theme_bw(8))
 ARD_Fig5 <- ARD_TSN_pc1_long  %>%
-  filter(param %in% plot_elements4_ARD) %>%
-  mutate(param = fct_relevel(param, plot_elements4_ARD)) %>%
+  filter(param %in% plot_elements2_ARD) %>%
+  mutate(param = fct_relevel(param, plot_elements2_ARD)) %>%
   ggplot(aes(x = value, y = depth_cm)) +
   geom_lineh(size = 0.5) +
   geom_point(size = 0.01) +
@@ -909,8 +1153,8 @@ ggsave("Figures/ARD/Fig 5_6_TSN_pc_CONISS.pdf",
 guano_zone_colours <- c("#BDBDBD", "#00441B", "#00441B", "#006D2C", "#238B45", "#74C476")
 theme_set(theme_bw(8))
 ARD_Fig8 <- ARD_cps_sum_norm_pc_long  %>%
-  filter(param %in% plot_elements3_ARD) %>%
-  mutate(param = fct_relevel(param, plot_elements3_ARD)) %>%
+  filter(param %in% plot_elements2_ARD) %>%
+  mutate(param = fct_relevel(param, plot_elements2_ARD)) %>%
   ggplot(aes(x = value, y = depth_cm, aes(colour = guano_zone_colours))) +
   geom_lineh(size = 0.5) +
   geom_point(size = 0.01) +
@@ -945,7 +1189,7 @@ ggsave("Figures/ARD/Fig 8_9_cps_sum_pc_CONISS.pdf",
 
 
 # create a new element list without Ti
-plot_elements5_ARD <- purrr::discard(plot_elements4_ARD,.p = ~stringr::str_detect(.x,"Ti"))
+plot_elements5_ARD <- purrr::discard(plot_elements2_ARD,.p = ~stringr::str_detect(.x,"Ti"))
 plot_elements5_ARD
 
 # Figure 11 Ti normalised
@@ -1022,56 +1266,21 @@ ARD_Fig14 <- ARD_COMP_filter1_clr_long  %>%
   facet_geochem_gridh(vars(param)) +
   labs(x = "cps", y = "Depth (cm)") +
   geom_hline(yintercept = c(13, 35, 64.5, 155, 175, 190, 284, 310, 320, 326), colour = "red", lty = 2, alpha = 0.7) +
-  ggtitle("Filtered elements cps clr based on mean>50 cps stats")
+  ggtitle("Filtered elements cps clr based on ACF cps stats")
 ARD_Fig14
 
+# Add CONISS Zones using in built tidypalaeo CONISS 
+coniss4_ARD <- ARD_COMP_filter1_clr_long %>%
+  nested_data(qualifiers = c(SH20_age, depth_cm), key = param, value = value, trans = scale) %>%
+  nested_chclust_coniss()
 
-# Change element list to m0.1 (cps_sum mean >0.1%) list or ARD_elements4 filtered list
-# remove ratios to leave only elements and scatter - can change elements used in clr here!
-ARD_clr_elements4 <- purrr::discard(plot_elements4_ARD,.p = ~stringr::str_detect(.x,"inc_coh"))
-ARD_clr_elements4 <- purrr::discard(ARD_clr_elements4 ,.p = ~stringr::str_detect(.x,"coh_inc"))
-ARD_clr_elements4
-
-# apply clr to cps data and convert all 0 to NA for plotting clarity
-ARD_COMP_filter1_clr4 <- select(ARD_COMP_filter1, all_of(ARD_clr_elements4)) %>% 
-  select(all_of(ARD_clr_elements4)) %>%
-  filter(!if_any(everything(), is.na)) %>% 
-  clr()
-ARD_COMP_filter1_clr4 <- as_tibble(ARD_COMP_filter1_clr4) %>% 
-  na_if(0)
-ARD_COMP_filter1_clr4
-
-ARD_COMP_filter1_clr4 <- bind_cols(ARD_COMP_filter1_text, ARD_COMP_filter1_clr4) %>% 
-  relocate(inc_coh, .after = Mo_coh) %>% 
-  relocate(coh_inc, .after = inc_coh)
-ARD_COMP_filter1_clr4
-
-write.csv(ARD_COMP_filter1_clr4,"Output/ARD/14A_cps_filter1_clr_elements4.csv", row.names = FALSE)
-
-# convert clr datafile to long format for plotting
-ARD_COMP_filter1_clr4_long <- select(ARD_COMP_filter1_clr4,  Core, depth_cm, SH20_age, kcps, MSE, all_of(plot_elements4_ARD)) %>%
-  pivot_longer(all_of(plot_elements4_ARD), names_to = "param", values_to = "value")
-#relocate(param, .before = Type)
-head(ARD_COMP_filter1_clr4_long)
-tail(ARD_COMP_filter1_clr4_long)
-
-# Figure 14a - cps clr for clr_elements
-theme_set(theme_bw(8))
-ARD_Fig14A <- ARD_COMP_filter1_clr4_long  %>%
-  filter(param %in% plot_elements4_ARD) %>%
-  mutate(param = fct_relevel(param, plot_elements4_ARD)) %>%
-  ggplot(aes(x = value, y = depth_cm)) +
-  geom_point(size = 0.01) +
-  geom_lineh(size = 0.5) +
-  scale_y_reverse() +
-  facet_geochem_gridh(vars(param)) +
-  labs(x = "cps", y = "Depth (cm)") +
-  geom_hline(yintercept = c(13, 35, 64.5, 155, 175, 190, 284, 310, 320, 326), colour = "red", lty = 2, alpha = 0.7) +
-  ggtitle("Filtered elements cps clr based on mean>0.1% %cps_sum elements")
-ARD_Fig14A
-
+# Figure 14a
+ARD_Fig14A <- ARD_Fig14 + labs(x = "clr", y = "Depth (cm)") +
+  layer_dendrogram(coniss3_ARD, aes(y = depth_cm), param = "CONISS ITRAX") +
+  layer_zone_boundaries(coniss3_ARD, aes(y = depth_cm, col = "red", lty = 2, alpha = 0.7)) +
+  ggtitle("CLR - ACF defined elements with CONISS XRF(red)")
 ggarrange(ARD_Fig14, ARD_Fig14A, nrow = 2)
-ggsave("Figures/ARD/Fig 14_cps_clr_elements2&4.pdf",
+ggsave("Figures/ARD/Fig 14_clr_ACF_elements.pdf",
        height = c(15), width = c(30), dpi = 600, units = "cm")
 
 # Plots vs age ------------------------------------------------------------
@@ -1079,8 +1288,8 @@ ggsave("Figures/ARD/Fig 14_cps_clr_elements2&4.pdf",
 # Figure 15 %cps sum vs SH20_age  ----------------------------------
 theme_set(theme_bw(7))
 ARD_Fig15 <- ARD_cps_sum_norm_pc_long  %>%
-  filter(param %in% plot_elements4_ARD) %>%
-  mutate(param = fct_relevel(param, plot_elements4_ARD)) %>%
+  filter(param %in% plot_elements2_ARD) %>%
+  mutate(param = fct_relevel(param, plot_elements2_ARD)) %>%
   ggplot(aes(x = SH20_age, y = value)) +
   geom_point(size = 0.01) +
   geom_line(size = 0.5) +
@@ -1088,14 +1297,15 @@ ARD_Fig15 <- ARD_cps_sum_norm_pc_long  %>%
   labs(x = "Age (cal a BP)", y = "%cps sum") +
   geom_vline(xintercept = c(1257, 2552, 2933, 3800, 4163, 4418, 5298, 5874, 6538, 6936), colour = "red", lty = 2, alpha = 0.7) +
   ggtitle("%cps sum (filtered elements): CONISS XRF")
+ARD_Fig15
 ggsave("Figures/ARD/Fig 15_cps_sum_CONISS_2017.pdf",
        height = c(30), width = c(15), dpi = 600, units = "cm")
 
 # Figure 16 cps/Ti as Z-scores vs SH20_age  ----------------------------------
 theme_set(theme_bw(7))
 ARD_Fig16 <- ARD_Ln_Ti_norm.Z_long  %>%
-  filter(param %in% plot_elements4_ARD) %>%
-  mutate(param = fct_relevel(param, plot_elements4_ARD)) %>%
+  filter(param %in% plot_elements2_ARD) %>%
+  mutate(param = fct_relevel(param, plot_elements2_ARD)) %>%
   ggplot(aes(x = SH20_age, y = value)) +
   geom_point(size = 0.01) +
   geom_line(size = 0.5) +
@@ -1108,9 +1318,9 @@ ggsave("Figures/ARD/Fig 16_Ti_norm_CONISS_2017.pdf",
 
 # Figure 17 cps clr (clr_elements4) vs SH20_age  ----------------------------------
 theme_set(theme_bw(7))
-ARD_Fig17 <- ARD_COMP_filter1_clr4_long  %>%
-  filter(param %in% plot_elements4_ARD) %>%
-  mutate(param = fct_relevel(param, plot_elements4_ARD)) %>%
+ARD_Fig17 <- ARD_COMP_filter1_clr_long  %>%
+  filter(param %in% plot_elements2_ARD) %>%
+  mutate(param = fct_relevel(param, plot_elements2_ARD)) %>%
   ggplot(aes(x = SH20_age, y = value)) +
   geom_point(size = 0.01) +
   geom_line(size = 0.5) +
@@ -1118,6 +1328,7 @@ ARD_Fig17 <- ARD_COMP_filter1_clr4_long  %>%
   labs(x = "Age (cal a BP)", y = "cps clr") +
   geom_vline(xintercept = c(1257, 2552, 2933, 3800, 4163, 4418, 5298, 5874, 6538, 6936), colour = "red", lty = 2, alpha = 0.7)+
   ggtitle("Centered log ratio (clr) cps (filtered elements): CONISS XRF")
+ARD_Fig17
 ggsave("Figures/ARD/Fig 17_clr_cps_CONISS_2017.pdf",
        height = c(30), width = c(15), dpi = 600, units = "cm")
 
@@ -1135,7 +1346,7 @@ ggsave("Figures/ARD/Fig 15&17_clr_&_Ti_Z_CONISS_2017_age.pdf",
 
 
 
-# PART 2 - Yanou Lake - YAN-ITRAX-SH20  ------------------------------------------------------------------
+# PART 2 - Yanou Lake - YAN-ITRAX-SH20  - TO DO ACF filtering as for ARD ------------------------------------------------------------------
 
 # YAN-ITRAX-SH20 - Import cps data ---------------------------------------------
 library(dplyr)
