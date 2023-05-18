@@ -352,7 +352,7 @@ p2
 ggsave("Figures/clr/Fig 1_clr_XRFelemental_byrecord_Ca.pdf", 
        height = c(30), width = c(30), dpi = 600, units = "cm")
 
-# Biplot Figure for paper  - TO DO 
+# Biplot Figure for paper - redo to match Sigmaplot diagram
 
 
 # -------------------------------------------------------------------------
