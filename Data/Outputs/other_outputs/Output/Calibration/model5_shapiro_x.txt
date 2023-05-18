@@ -1,6 +1,0 @@
-
-	Shapiro-Wilk normality test
-
-data:  x5.reg
-W = 0.92043, p-value = 1.847e-10
-
