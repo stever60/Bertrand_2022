@@ -1,0 +1,60 @@
+
+	Pearson's product-moment correlation
+
+data:  df.Z$P_Ti_CS and df.Z$P_Ti
+t = 25.038, df = 254, p-value < 2.2e-16
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ 0.8041637 0.8756326
+sample estimates:
+     cor 
+0.843594 
+
+
+	Pearson's product-moment correlation
+
+data:  df.Z$Ca_Ti_CS and df.Z$Ca_Ti
+t = 33.087, df = 254, p-value < 2.2e-16
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ 0.8749756 0.9217234
+sample estimates:
+      cor 
+0.9009313 
+
+
+	Pearson's product-moment correlation
+
+data:  df.Z$Cu_Ti_CS and df.Z$Cu_Ti
+t = 30.932, df = 254, p-value < 2.2e-16
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ 0.8600750 0.9121332
+sample estimates:
+      cor 
+0.8889409 
+
+
+	Pearson's product-moment correlation
+
+data:  df.Z$Zn_Ti_CS and df.Z$Zn_Ti
+t = 27.869, df = 254, p-value < 2.2e-16
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ 0.8342701 0.8953890
+sample estimates:
+      cor 
+0.8680819 
+
+
+	Pearson's product-moment correlation
+
+data:  df.Z$Sr_Ti_CS and df.Z$Sr_Ti
+t = 23.791, df = 254, p-value < 2.2e-16
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ 0.7885297 0.8652780
+sample estimates:
+      cor 
+0.8308127 
+

@@ -1,0 +1,6 @@
+
+	Shapiro-Wilk normality test
+
+data:  y2.reg
+W = 0.8243, p-value = 2.498e-16
+

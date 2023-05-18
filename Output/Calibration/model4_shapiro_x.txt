@@ -1,0 +1,6 @@
+
+	Shapiro-Wilk normality test
+
+data:  x4.reg
+W = 0.90472, p-value = 1.146e-11
+
