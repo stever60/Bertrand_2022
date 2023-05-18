@@ -398,9 +398,6 @@ ARD_COMP_filter <- select(ARD_COMP,
 
 write.csv(ARD_COMP_filter,"Output/ARD/ARD_COMP_filter.csv", row.names = FALSE)
 
-
-
-
 # MSE and cps filtering - base don itrax.R workflow (Bishop 2020) --------------------------------------------------
 
 # cps filtering - Fe a*2
@@ -586,7 +583,7 @@ ARD_COMP_filter <- select(ARD_COMP,
 
 write.csv(ARD_COMP_filter,"Output/ARD/1_cps_filter.csv", row.names = FALSE)
 
-# Calculate ratios & normalisation factors TS (Total Scatter), cps_sum & inc/coh -------------------------------------------------------
+# 2. Calculate ratios & normalisation factors TS (Total Scatter), cps_sum & inc/coh -------------------------------------------------------
 
 # Add to columns - find a way to replace [9:67] with column headings as "Mg":"Mo_coh"
 ARD_COMP_filter
@@ -600,8 +597,8 @@ ARD_COMP_filter1 <- ARD_COMP_filter %>%
   mutate(inc_coh = Mo_inc / Mo_coh) %>%
   mutate(coh_inc = Mo_coh / Mo_inc) %>%
   mutate(cps_sum = rowSums(across(Mg:Mo_coh)))
-  #mutate(cps_sum = rowSums(.[ARD_rowsums]))
-  #mutate(cps_sum = row_sums(ARD_elements))
+  #mutate(cps_sum = rowSums(.[ARD_rowsums])) - old code - dont use
+  #mutate(cps_sum = row_sums(ARD_elements)) - old code - dont use
 ARD_COMP_filter1
 
 # Generate cps summary stats  --------------------------------------------
@@ -672,7 +669,7 @@ write.csv(ARD_summary,"Output/ARD/ARD_summary_stats.csv", row.names = FALSE)
 write.csv(ARD_COMP_filter1.Z,"Output/ARD/ARD_COMP_filter1.Z.csv", row.names = FALSE)
 
 # -------------------------------------------------------------------------
-# Element filtering - RUN ONCE - then use as ARD_COMP_filter1 to take forward
+# 3. Element filtering - RUN ONCE - then use as ARD_COMP_filter1 to take forward
 # -------------------------------------------------------------------------
 # Autocorrelation based filtering of elements -----------------------------
 
@@ -715,8 +712,6 @@ Fig3.4 <- ggarrange(
 print(Fig3.4)
 ggsave("Output/ITRAX_COMPOSITE/Valid_qc/Section3/Figures/Fig3.4_ACF_pt2.pdf", 
        height = c(30), width = c(30), dpi = 600, units = "cm")
-
-
 
 # Filter elements based on acf lag thresholds ---------------------------
 
@@ -936,8 +931,11 @@ ARD_col_m50_mx50 <- select(ARD_COMP_filter1, Mg:Mo_coh
 
 
 # -------------------------------------------------------------------------
-# Define elements to use from here based on ACF analysis
+# 4. Define elements to use from here based on ACF analysis
 # -------------------------------------------------------------------------
+
+# define element list from ACF analysis above and copy out when starting from this point
+acfElementsList_min 
 
 acfElementsList_min <- c("Si", "P", "K", "Ca", "Ti", "V", "Mn", "Fe", "Co", "Cu", "Zn", "Br", "Sr", "Zr", "Os", "Mo_inc", "Mo_coh")
 
@@ -949,7 +947,7 @@ plot_elements1_ARD <-c("Si", "P", "S", "K", "Ca", "Ti", "V", "Cr", "Mn", "Fe", "
 plot_elements2_ARD <- c(acfElementsList_min, "inc_coh", "coh_inc")
 
 # -------------------------------------------------------------------------
-# Centered log ratio (clr) from cps dataset
+# 5. Centered log ratio (clr) from cps dataset
 # -------------------------------------------------------------------------
 
 # load compositions package & datafile to use
@@ -992,7 +990,6 @@ tail(ARD_COMP_filter1_clr_long)
 write.csv(ARD_COMP_filter1_clr,"Output/ARD/3.1_cps_filter1_clr.csv", row.names = FALSE)
 write.csv(ARD_COMP_filter1_clr,"Output/ARD/ARD_COMP_filter1_clr.csv", row.names = FALSE)
 write.csv(ARD_COMP_filter1_clr_long,"Output/ARD/ARD_COMP_filter1_clr_long.csv", row.names = FALSE)
-
 
 # -------------------------------------------------------------------------
 # Normalization
@@ -1124,7 +1121,8 @@ ARD_TSN_pc1_summary <- ARD_TSN_pc1 %>%
   as_tibble(rownames="rowname")  %>%
   print()
 
-# manually user defined elements
+# Manually user defined element lists ----------------------------------------
+
 plot_elements3_ARD <- c("K", "Ca", "Ti", "Mn", "Fe", "Cu", "Zn", 
                         "Br", "Sr", "Zr", "Mo_inc", "Mo_coh", "inc_coh", "coh_inc")
 # OR 
@@ -1149,7 +1147,8 @@ plot_elements4_ARD <- c("K", "Ca", "Ti", "Mn", "Fe", "Cu", "Zn",
 
 
 
-# Convert to long format ------------------------------------------------
+
+# Convert to long format for plotting ------------------------------------------------
 ARD_inc_norm_long <- select(ARD_inc_norm,  Core, depth_cm, SH20_age, kcps, MSE, all_of(ARD_col1)) %>%
   pivot_longer(all_of(ARD_col1), names_to = "param", values_to = "value")
 ARD_inc_norm_long
@@ -1190,7 +1189,7 @@ write.csv(ARD_Ln_Ti_norm.Z,"Output/ARD/11_Ln_Ti_norm_Z.csv", row.names = FALSE)
 write.csv(ARD_Ln_Ti_norm.Z,"Output/ARD/ARD_Ln_Ti_norm.Z.csv", row.names = FALSE)
 
 # -------------------------------------------------------------------------
-# Correlation matrices 
+# 6. Correlation matrices 
 # -------------------------------------------------------------------------
 
 library(GGally)
@@ -1231,14 +1230,13 @@ ggpairs(ARD_COMP_filter1_clr, columns = plot_elements2_ARD, upper = list(continu
 ggsave("Figures/ARD/Corr-den_matrix_clr_ACF.pdf", 
        height = c(30), width = c(30), dpi = 600, units = "cm")
 
-
 # -------------------------------------------------------------------------
-# Summary plots
+# 7. Summary plots
 # -------------------------------------------------------------------------
 
 library(tidypaleo)
 
-# Figure 1 - cps elements1
+# Figure 7.1 - cps elements1
 theme_set(theme_bw(8))
 ARD_Fig1 <- ARD_COMP_filter1_long  %>%
   filter(param %in% plot_elements1_ARD) %>%
@@ -1251,7 +1249,7 @@ ARD_Fig1 <- ARD_COMP_filter1_long  %>%
   labs(x = "cps", y = "Depth (cm)") +
   ggtitle("Signifcantly correlated elements cps summary")
 
-# Figure 2 - cps elements2 based on ACF or mean>50 cps stats
+# Figure 7.2 - cps elements2 based on ACF or mean>50 cps stats
 theme_set(theme_bw(8))
 ARD_Fig2 <- ARD_COMP_filter1_long  %>%
   filter(param %in% plot_elements2_ARD) %>%
@@ -1265,7 +1263,7 @@ ARD_Fig2 <- ARD_COMP_filter1_long  %>%
   ggtitle("Filtered elements cps based on ACF stats")
 
 ggarrange(ARD_Fig1, ARD_Fig2, nrow = 2)
-ggsave("Figures/ARD/Fig 1-2_cps.pdf",
+ggsave("Figures/ARD/Fig 7.1-7.2_cps.pdf",
        height = c(15), width = c(30), dpi = 600, units = "cm")
 
 #  cps plots with smoothing -------------------------------------------
@@ -1312,11 +1310,10 @@ print(Fig2.1)
 
 # nested ggarrange to produce split level summary plot with different number of plots per row
 ggarrange(Fig2, Fig2.1, nrow = 2, labels = c("A", "B"), common.legend = TRUE)
-ggsave("Output/ITRAX_COMPOSITE/Valid_qc/Section3/Figures/Fig 2_smoothed.pdf", 
+ggsave("Output/ITRAX_COMPOSITE/Valid_qc/Section3/Figures/Fig 7.2_smoothed.pdf", 
        height = c(30), width = c(30), dpi = 600, units = "cm")
 
-
-# Figure 3 - cps elements2 Z-scores
+# Figure 7.3 - cps elements2 Z-scores
 theme_set(theme_bw(8))
 ARD_Fig3 <- ARD_COMP_filter1_long.Z  %>%
   filter(param %in% plot_elements2_ARD) %>%
@@ -1329,7 +1326,7 @@ ARD_Fig3 <- ARD_COMP_filter1_long.Z  %>%
   labs(x = "cps", y = "Depth (cm)") +
   ggtitle("Filtered elements cps Z-scores based on ACF cps stats")
 
-# Figure 3A - clr
+# Figure 7.3A - clr
 theme_set(theme_bw(8))
 ARD_Fig3A <- ARD_COMP_filter1_clr_long  %>%
   filter(param %in% plot_elements2_ARD) %>%
@@ -1343,10 +1340,10 @@ ARD_Fig3A <- ARD_COMP_filter1_clr_long  %>%
   ggtitle("Filtered elements cps clr based on ACF cps stats")
 
 ggarrange(ARD_Fig3, ARD_Fig3A, nrow = 2)
-ggsave("Figures/ARD/Fig 3_Z_clr.pdf",
+ggsave("Figures/ARD/Fig 7.3_Z_clr.pdf",
        height = c(15), width = c(30), dpi = 600, units = "cm")
 
-# Figure 4 cps/inc. -----------------------------------------------------
+# Figure 7.4 cps/inc. -----------------------------------------------------
 
 # Plot multiple variables & add CONISS zone boundaries defined from subsample data 
 # Roberts et al 2017 - CONISS with broken stick Hellingers dist defined zones - red dashed lines
@@ -1375,10 +1372,10 @@ ARD_Fig4b <- ARD_coh_inc_norm_long  %>%
   geom_hline(yintercept = c(13, 35, 64.5, 155, 175, 190, 284, 310, 320, 326), colour = "red", lty = 2, alpha = 0.7) +
   ggtitle("Coherent/Incoherent (coh./inc.) scatter ratio normalised (filtered elements): CONISS XRF")
 ggarrange(ARD_Fig4a, ARD_Fig4b, nrow = 2)
-ggsave("Figures/ARD/Fig 4__cps_inc&coh_inc.pdf",
+ggsave("Figures/ARD/Fig 7.4__cps_inc&coh_inc.pdf",
        height = c(15), width = c(30), dpi = 600, units = "cm")
 
-# Figure 5 %cps ----------------------------------------------------------------
+# Figure 7.5 %cps ----------------------------------------------------------------
 
 # Plot multiple variables & add CONISS zone boundaries defined from subsample data 
 # Roberts et al 2017 - CONISS with broken stick Hellingers dist defined zones - red dashed lines
@@ -1407,17 +1404,17 @@ ARD_Fig6 <- ARD_Fig5 +
   ggtitle("%TSN (filtered elements): CONISS XRF(red) ITRAX (black)")
 
 ggarrange(ARD_Fig5, ARD_Fig6, nrow = 2)
-ggsave("Figures/ARD/Fig 5_6_TSN_pc_CONISS.pdf",
+ggsave("Figures/ARD/Fig 7.5_7.6_TSN_pc_CONISS.pdf",
        height = c(15), width = c(30), dpi = 600, units = "cm")
 
-#Figure 7 - TSN with CONISS and Roberts et al (2017) zone boundaries
+#Figure 7.7 - TSN with CONISS and Roberts et al (2017) zone boundaries
 #ARD_Fig6 +
 #  geom_hline(yintercept = c(13, 35, 64.5, 155, 175, 190, 284, 310, 320, 326), colour = "red", lty = 2, alpha = 0.7) +
 #  ggtitle("%TSN (filtered elements): Coniss zone comparison")
 #ggsave("Figures/ARD/Fig 7_TSN_pc_CONISS_comparison.pdf",
 #       height = c(15), width = c(30), dpi = 600, units = "cm")
 
-# Figure 8  %cps_sum
+# Figure 7.8  %cps_sum
 #define colour scheme for 6 groups (5 guano and 1 non-guano)
 guano_zone_colours <- c("#BDBDBD", "#00441B", "#00441B", "#006D2C", "#238B45", "#74C476")
 theme_set(theme_bw(8))
@@ -1440,13 +1437,13 @@ coniss2_ARD <- ARD_cps_sum_norm_pc_long %>%
   nested_data(qualifiers = c(SH20_age, depth_cm), key = param, value = value, trans = scale) %>%
   nested_chclust_coniss()
 
-# Figure 9 %cps_sum with CONISS
+# Figure 7.9 %cps_sum with CONISS
 ARD_Fig9 <- ARD_Fig8 +
   layer_dendrogram(coniss2_ARD, aes(y = depth_cm), param = "CONISS") +
   layer_zone_boundaries(coniss2_ARD, aes(y = depth_cm, col = "red", lty = 2, alpha = 0.7)) +
   ggtitle("%cps sum (filtered elements): CONISS XRF(red) ITRAX (black)")
 ggarrange(ARD_Fig8, ARD_Fig9, nrow = 2)
-ggsave("Figures/ARD/Fig 8_9_cps_sum_pc_CONISS.pdf",
+ggsave("Figures/ARD/Fig 7.8-7.9_cps_sum_pc_CONISS.pdf",
        height = c(15), width = c(30), dpi = 600, units = "cm")
 
 # Figure 10 - compare to Roberts et al. 2017 CONISS zoning 
@@ -1456,12 +1453,11 @@ ggsave("Figures/ARD/Fig 8_9_cps_sum_pc_CONISS.pdf",
 #ggsave("Figures/ARD/Fig 10_cps_sum_pc_CONISS_comp.pdf",
 #       height = c(15), width = c(30), dpi = 600, units = "cm")
 
-
 # create a new element list without Ti
 plot_elements5_ARD <- purrr::discard(plot_elements2_ARD,.p = ~stringr::str_detect(.x,"Ti"))
 plot_elements5_ARD
 
-# Figure 11 Ti normalised
+# Figure 7.11 Ti normalised
 theme_set(theme_bw(8))
 ARD_Fig11 <- ARD_Ln_Ti_norm_long  %>%
   filter(param %in% plot_elements5_ARD) %>%
@@ -1478,7 +1474,7 @@ ARD_Fig11
 ggsave("Figures/ARD/Fig 11_Ti_norm.pdf",
        height = c(15), width = c(30), dpi = 600, units = "cm")
 
-# Figure 12 - Ti normalised as Z-scores 
+# Figure 7.12 - Ti normalised as Z-scores 
 theme_set(theme_bw(8))
 ARD_Fig12 <- ARD_Ln_Ti_norm.Z_long  %>%
   filter(param %in% plot_elements5_ARD) %>%
@@ -1505,16 +1501,15 @@ ARD_Fig13 <- ARD_Fig12 + labs(x = "Ln(cps/Ti Z-scores)", y = "Depth (cm)") +
   layer_zone_boundaries(coniss3_ARD, aes(y = depth_cm, col = "red", lty = 2, alpha = 0.7)) +
   ggtitle("Log Ti-normalised Z-scores (filtered elements): CONISS XRF(red) ITRAX (black)")
 ggarrange(ARD_Fig12, ARD_Fig13, nrow = 2)
-ggsave("Figures/ARD/Fig 12_13_Ti_Z_CONISS.pdf",
+ggsave("Figures/ARD/Fig 7.12-7.13_Ti_Z_CONISS.pdf",
        height = c(15), width = c(30), dpi = 600, units = "cm")
-
 
 # CLR plots -------
 
 # load compositions package
 library(compositions)
 
-# Figure 14 - cps clr for clr_elements - based on mean > 50 cps - same as Fig3A
+# Figure 7.14 - cps clr for clr_elements - based on mean > 50 cps - same as Fig3A
 theme_set(theme_bw(8))
 ARD_Fig14 <- ARD_COMP_filter1_clr_long  %>%
   filter(param %in% plot_elements2_ARD) %>%
@@ -1540,12 +1535,14 @@ ARD_Fig14A <- ARD_Fig14 + labs(x = "clr", y = "Depth (cm)") +
   layer_zone_boundaries(coniss3_ARD, aes(y = depth_cm, col = "red", lty = 2, alpha = 0.7)) +
   ggtitle("CLR - ACF defined elements with CONISS XRF(red)")
 ggarrange(ARD_Fig14, ARD_Fig14A, nrow = 2)
-ggsave("Figures/ARD/Fig 14_clr_ACF_elements.pdf",
+ggsave("Figures/ARD/Fig 7.14_clr_ACF_elements.pdf",
        height = c(15), width = c(30), dpi = 600, units = "cm")
 
-# Plots vs age ------------------------------------------------------------
+# -------------------------------------------------------------------------
+# Plots vs age
+# -------------------------------------------------------------------------
 
-# Figure 15 %cps sum vs SH20_age  ----------------------------------
+# Figure 7.15 %cps sum vs SH20_age  ----------------------------------
 theme_set(theme_bw(7))
 ARD_Fig15 <- ARD_cps_sum_norm_pc_long  %>%
   filter(param %in% plot_elements2_ARD) %>%
@@ -1558,10 +1555,10 @@ ARD_Fig15 <- ARD_cps_sum_norm_pc_long  %>%
   geom_vline(xintercept = c(1257, 2552, 2933, 3800, 4163, 4418, 5298, 5874, 6538, 6936), colour = "red", lty = 2, alpha = 0.7) +
   ggtitle("%cps sum (filtered elements): CONISS XRF")
 ARD_Fig15
-ggsave("Figures/ARD/Fig 15_cps_sum_CONISS_2017.pdf",
+ggsave("Figures/ARD/Fig 7.15_cps_sum_CONISS_2017.pdf",
        height = c(30), width = c(15), dpi = 600, units = "cm")
 
-# Figure 16 cps/Ti as Z-scores vs SH20_age  ----------------------------------
+# Figure 7.16 cps/Ti as Z-scores vs SH20_age  ----------------------------------
 theme_set(theme_bw(7))
 ARD_Fig16 <- ARD_Ln_Ti_norm.Z_long  %>%
   filter(param %in% plot_elements2_ARD) %>%
@@ -1573,10 +1570,10 @@ ARD_Fig16 <- ARD_Ln_Ti_norm.Z_long  %>%
   labs(x = "Age (cal a BP)", y = "cps/Ti Z-score") +
   geom_vline(xintercept = c(1257, 2552, 2933, 3800, 4163, 4418, 5298, 5874, 6538, 6936), colour = "red", lty = 2, alpha = 0.7)+
   ggtitle("Log Ti-normalised Z-scores (filtered elements): CONISS XRF")
-ggsave("Figures/ARD/Fig 16_Ti_norm_CONISS_2017.pdf",
+ggsave("Figures/ARD/Fig 7.16_Ti_norm_CONISS_2017.pdf",
        height = c(30), width = c(15), dpi = 600, units = "cm")
 
-# Figure 17 cps clr (clr_elements4) vs SH20_age  ----------------------------------
+# Figure 7.17 cps clr (clr_elements4) vs SH20_age  ----------------------------------
 theme_set(theme_bw(7))
 ARD_Fig17 <- ARD_COMP_filter1_clr_long  %>%
   filter(param %in% plot_elements2_ARD) %>%
@@ -1589,24 +1586,29 @@ ARD_Fig17 <- ARD_COMP_filter1_clr_long  %>%
   geom_vline(xintercept = c(1257, 2552, 2933, 3800, 4163, 4418, 5298, 5874, 6538, 6936), colour = "red", lty = 2, alpha = 0.7)+
   ggtitle("Centered log ratio (clr) cps (filtered elements): CONISS XRF")
 ARD_Fig17
-ggsave("Figures/ARD/Fig 17_clr_cps_CONISS_2017.pdf",
+ggsave("Figures/ARD/Fig 7.17_clr_cps_CONISS_2017.pdf",
        height = c(30), width = c(15), dpi = 600, units = "cm")
 
 # Comparison plots 
 
 #plot Figure 15 and 16 side by side
 ggarrange(ARD_Fig15, ARD_Fig16, nrow = 1)
-ggsave("Figures/ARD/Fig 15&16_cps_sum_&_Ti_Z_CONISS_2017_age.pdf",
+ggsave("Figures/ARD/Fig 7.15-7.16_cps_sum_&_Ti_Z_CONISS_2017_age.pdf",
        height = c(30), width = c(30), dpi = 600, units = "cm")
 
 #plot Figure 15 and 17 side by side
 ggarrange(ARD_Fig15, ARD_Fig17, nrow = 1)
-ggsave("Figures/ARD/Fig 15&17_clr_&_Ti_Z_CONISS_2017_age.pdf",
+ggsave("Figures/ARD/Fig 7.15-7.17_clr_&_Ti_Z_CONISS_2017_age.pdf",
        height = c(30), width = c(30), dpi = 600, units = "cm")
 
 
 
-# PART 2 - Yanou Lake - YAN-ITRAX-SH20  - TO DO ACF filtering as for ARD ------------------------------------------------------------------
+# -------------------------------------------------------------------------
+
+# PART 2 - Yanou Lake - YAN-ITRAX-SH20  - TO DO ACF filtering as for ARD
+
+# -------------------------------------------------------------------------
+
 
 # YAN-ITRAX-SH20 - Import cps data ---------------------------------------------
 library(dplyr)
