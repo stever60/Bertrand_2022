@@ -11,6 +11,8 @@ dev.off()
 #set working directory (example)
 setwd("D:/Dropbox/BAS/Data/R/Papers/Bertrand_2022/Data") # windows
 setwd("/Users/Steve/Dropbox/BAS/Data/R/Papers/Bertrand_2022/Data") # mac
+setwd("/Users/sjro/Dropbox/BAS/Data/R/Papers/Bertrand_2022/Data") # Macbook M2
+getwd()
 
 # assign elements to from PeriodicTable package to 'elementsList' (then unload package)
 data(periodicTable)

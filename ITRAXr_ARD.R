@@ -17,17 +17,10 @@ library(ggpubr)
 # https://www.dropbox.com/sh/r1w50fj88ucju3r/AABoVF97YqtymOPVIGLk8-AXa?dl=0 
 
 #set working directory
-setwd("/Users/Steve/Dropbox/BAS/Data/R/Papers/Bertrand_2021/Data/ITRAX/ARD_13_8_Mo")
+#setwd("/Users/Steve/Dropbox/BAS/Data/R/Papers/Bertrand_2022/Data/ITRAX/ARD_13_8_Mo") #old mac
+setwd("/Users/sjro/Dropbox/BAS/Data/R/Papers/Bertrand_2022/Data/ITRAX/ARD_13_8_Mo") #macbook M2
 #check working directory
 getwd() 
-
-# START NOTES ----------------------------------------------------------
-
-# general list of all elements in ARD files
-cps_elementsList <- select(df, c(Mg:U, `Mo inc`, `Mo coh`)) %>% 
-  names()
-cps_elementsList
-# contains extra lines D1, S1, S2, S3; D1 = Fe a*2 = 12.8 keV used in itrax.R example file
 
 # Renaming columns in  old filenames to match ITRAX.r formats before using itraximport  ----------------------------------
 
@@ -42,6 +35,12 @@ cps_elementsList
 df<- read_tsv("ARD1E/result.txt", col_names = TRUE, skip = 2) %>% 
   rename(cps = kcps, `Fe a*2` = D1) %>% 
   write_tsv("ARD1E/Results.tsv")
+
+# general list of all elements in ARD files
+cps_elementsList <- select(df, c(Mg:U, `Mo inc`, `Mo coh`)) %>% 
+  names()
+cps_elementsList
+# contains extra lines D1, S1, S2, S3; D1 = Fe a*2 = 12.8 keV used in itrax.R example file
 
 # import, calculate cps_sum and rename as cps, retain kcps column - saved as Results1.tsv
 df1_rowsums <- c(12:51, 55, 56)

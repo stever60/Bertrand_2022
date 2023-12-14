@@ -11,8 +11,10 @@ library(compositions) # package for analysing geochemcial compositional data
 # Reference: van den Boogaart (2023) version 2.0.6: http://www.stat.boogaart.de/compositions/ 
 
 # Set working directory (example for Steve’s folder structure - replace with your own folder structure)
-# setwd("D:/Dropbox/BAS/Data/R/Papers/Bertrand_2022/Data") # windows
+setwd("D:/Dropbox/BAS/Data/R/Papers/Bertrand_2022/Data") # windows
 setwd("/Users/sjro/Dropbox/BAS/Data/R/Papers/Bertrand_2022/Data") # mac
+setwd("/Users/sjro/Dropbox/BAS/Data/R/Papers/Bertrand_2022/Data") # Macbook Pro M2
+getwd()
 
 # Use PeriodicTable package to make 'elementsList' of elements to use from imported dataset (then unload the package) 
 data(periodicTable)

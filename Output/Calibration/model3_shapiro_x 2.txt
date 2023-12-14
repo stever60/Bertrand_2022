@@ -1,0 +1,6 @@
+
+	Shapiro-Wilk normality test
+
+data:  x3.reg
+W = 0.95693, p-value = 6.602e-07
+

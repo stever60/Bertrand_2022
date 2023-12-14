@@ -1,0 +1,7 @@
+
+	Durbin-Watson test
+
+data:  model_1
+DW = 1.5388, p-value = 8.545e-05
+alternative hypothesis: true autocorrelation is greater than 0
+
