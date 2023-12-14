@@ -354,7 +354,6 @@ ggsave("Figures/clr/Fig 1_clr_XRFelemental_byrecord_Ca.pdf",
 
 # Biplot Figure for paper - redo to match Sigmaplot diagram
 
-
 # -------------------------------------------------------------------------
 # ITRAX XRF-CS data 
 # -------------------------------------------------------------------------
@@ -364,6 +363,14 @@ ggsave("Figures/clr/Fig 1_clr_XRFelemental_byrecord_Ca.pdf",
 # Import cps data
 # Location of ARD-ITRAX-SH20 composite dataset
 # https://github.com/stever60/Bertrand_2022/tree/main/Data 
+# adapted from code and principles of itraxR v.17 Bishop (2021) and in discussion with Tom Bishop
+# Package: itraxR
+# Version: 1.7
+# Date: 2021-12-17
+# Author: Thomas Bishop
+# Maintainer: Thomas Bishop <tombishopemail@gmail.com>
+# URL: https://thomasbishop.uk
+# Github https://github.com/tombishop1/itraxR/issues
 
 # Composite ARD ITRAX cps dataset & Sh20 BACON age-depth model (added in Excel)
 ARD_xrf <- read_csv("Data/ARD_ITRAX_COMP_SH20.csv")

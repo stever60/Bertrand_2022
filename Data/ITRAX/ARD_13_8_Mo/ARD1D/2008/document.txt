@@ -1,0 +1,14 @@
+Station no:	Core no:	Section name	User ID
+C:\Data\BAS_sjro		ARD1D-2	sjr
+Year	Month	Day	Time
+2008	8	21	11
+Voltage	50	kV	
+Current	50	mA	
+Exposure time	200	ms	
+line camera signal level	181283	at 25 ms	
+Step size	2000	microns	
+XRF	ON		
+XRF exp. time	10	seconds	
+Start coordinate	0	Stop coordinate	995
+XRF voltage and current	30	  	50
+Tube	Mo		

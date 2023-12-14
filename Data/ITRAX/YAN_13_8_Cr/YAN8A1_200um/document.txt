@@ -1,0 +1,15 @@
+Base path:	Sample name:	Section name	User ID
+C:\Data\BAS_sjro\YAN April 2013	YAN 8B-1 & YAN 8A-1	YAN8A-1 USE	sjro
+Year	Month	Day	Time
+2013	04	27	04
+Voltage	30	kV	
+Current	30	mA	
+Exposure time	0	ms	
+line camera signal level	19463	at 25 ms	
+Step size	200	microns	
+XRF	ON		
+XRF exp. time	10	seconds	
+Start coordinate	510.0	Stop coordinate	970.0
+XRF voltage and current	30	  	30
+Tube	Cr-HE		
+Optical Start	0.5	Optical End	989.5

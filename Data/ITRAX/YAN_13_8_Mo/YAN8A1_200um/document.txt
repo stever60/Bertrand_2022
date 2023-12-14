@@ -1,0 +1,14 @@
+Station no:	Core no:	Section name	User ID
+C:\Data\BAS_sjro	Yanou 8A-1 200 micron	YAN 8A-1 200 um	sjro
+Year	Month	Day	Time
+2011	02	23	02
+Voltage	60	kV	
+Current	50	mA	
+Exposure time	200	ms	
+line camera signal level	199297	at 25 ms	
+Step size	200	microns	
+XRF	ON		
+XRF exp. time	10	seconds	
+Start coordinate	0.0	Stop coordinate	450.0
+XRF voltage and current	30	  	50
+Tube	Mo		

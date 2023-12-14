@@ -1,0 +1,22 @@
+Station no:	Core no:	Section name	User ID
+C:\Data\BAS_sjro		ARD1E	sjr
+Year	Month	Day	Time
+2008	8	21	13
+Voltage	50	kV	
+Current	50	mA	
+Exposure time	200	ms	
+line camera signal level	139938	at 25 ms	
+Step size	2000	microns	
+XRF	ON		
+XRF exp. time	10	seconds	
+Start coordinate	0	Stop coordinate	825
+XRF voltage and current	30	  	50
+Tube	Mo		
+Optical Start	0	Optical End	825
+Step size	0.188	microns	
+Start temperature		°C	
+Start humidity		%	
+Start vacuum	-95	kPa	
+Stop temperature		°C	
+Stop humidity		%	
+Stop vacuum	-94.8	kPa	

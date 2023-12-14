@@ -1,0 +1,15 @@
+Base path:	Sample name:	Section name	User ID
+C:\Data\BAS_sjro\YAN April 2013	YAN9B-1	YAN9B-1	sjro
+Year	Month	Day	Time
+2013	04	26	10
+Voltage	60	kV	
+Current	30	mA	
+Exposure time	200	ms	
+line camera signal level	48341	at 25 ms	
+Step size	200	microns	
+XRF	ON		
+XRF exp. time	10	seconds	
+Start coordinate	370.0	Stop coordinate	995.0
+XRF voltage and current	30	  	30
+Tube	Cr-HE		
+Optical Start	0.6	Optical End	1019.6

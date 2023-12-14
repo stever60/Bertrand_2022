@@ -1,0 +1,14 @@
+Station no:	Core no:	Section name	User ID
+Annenkov	YAN8A2	2	sjd
+Year	Month	Day	Time
+2008	02	21	10
+Voltage	60	kV	
+Current	50	mA	
+Exposure time	200	ms	
+line camera signal level	465785	at 25 ms	
+Step size	2000	microns	
+XRF	ON		
+XRF exp. time	10	seconds	
+Start coordinate	1.0	Stop coordinate	852.9
+XRF voltage and current	30	  	50
+Tube	Mo		

@@ -1,0 +1,14 @@
+Station no:	Core no:	Section name	User ID
+Yanou	YAN8A1	1	sjd
+Year	Month	Day	Time
+2008	02	21	16
+Voltage	60	kV	
+Current	50	mA	
+Exposure time	200	ms	
+line camera signal level	462719	at 25 ms	
+Step size	2000	microns	
+XRF	ON		
+XRF exp. time	10	seconds	
+Start coordinate	1.0	Stop coordinate	1002.5
+XRF voltage and current	30	  	50
+Tube	Mo		
